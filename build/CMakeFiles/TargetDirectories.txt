@@ -1,0 +1,3 @@
+/home/duarteescairo/Desktop/myShooter/build/CMakeFiles/class6.dir
+/home/duarteescairo/Desktop/myShooter/build/CMakeFiles/edit_cache.dir
+/home/duarteescairo/Desktop/myShooter/build/CMakeFiles/rebuild_cache.dir
