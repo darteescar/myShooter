@@ -52,6 +52,11 @@ float alpha = 0; // direção (rotação horizontal)
 float beta = 0;  // rotação vertical
 float eyeHeight = 2.0f;
 
+float velocityY = 0.0f;        // Velocidade vertical atual
+float gravity = -0.015f;       // Aceleração gravitacional (negativa = para baixo)
+float jumpForce = 0.75f;        // Força do salto
+bool isOnGround = true;        // Está no chão?
+
 int startX, startY, tracking = 0;
 
 bool keys[256] = {false};
@@ -135,6 +140,33 @@ void processKeys() {
 
 	camX += dx * speed;
 	camZ += dz * speed;
+
+	// Verificar se está no chão
+	float groundHeight = height(camX + tw/2, camZ + th/2);
+	float camHeightAboveGround = camY - groundHeight;
+	
+	if (camHeightAboveGround <= eyeHeight + 0.1f) {
+		isOnGround = true;
+		velocityY = 0.0f;  // Repousa no chão
+		camY = groundHeight + eyeHeight;
+	} else {
+		isOnGround = false;
+	}
+
+	if (keys[' ']) {
+	printf("SPACE DETECTADO! isOnGround=%d velocityY=%f\n", isOnGround, velocityY);
+	}
+
+	// Saltar quando space é pressionado E está no chão
+	if (keys[' '] && isOnGround) {
+		velocityY = jumpForce;
+		isOnGround = false;
+	}
+
+	// Aplicar gravidade
+	velocityY += gravity;
+	camY += velocityY;
+
 }
 
 void renderScene(void) {
@@ -147,7 +179,7 @@ void renderScene(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glLoadIdentity();
-	camY = height(camX + tw/2, camZ + th/2) + eyeHeight;
+	//camY = height(camX + tw/2, camZ + th/2) + eyeHeight;
 
     // direção para onde olha (com rotação vertical)
     float lookX = camX + sin(alpha * M_PI / 180.0f) * cos(beta * M_PI / 180.0f);
@@ -291,7 +323,7 @@ int main(int argc, char **argv) {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH|GLUT_DOUBLE|GLUT_RGBA);
 	glutInitWindowPosition(100,100);
-	glutInitWindowSize(320,320);
+	glutInitWindowSize(1000,1000);
 	glutCreateWindow("CG@DI-UM");
 	
 	glPolygonMode(GL_FRONT , GL_LINE);
